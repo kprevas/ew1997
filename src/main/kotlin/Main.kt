@@ -15,8 +15,9 @@ data class GameSpan(val teamSeason: TeamSeason, val start: Int, val length: Int)
 val trie = Trie<GameSpan>()
 val teamRecords = mutableMapOf<TeamSeason, MutableList<Boolean>>()
 
-fun readSeason(file: File) {
+fun readSeason(file: File, modern: Boolean) {
     val season = file.name.substring(2..5)
+    if (modern && season.startsWith("18")) return
     val rows = csvReader().readAll(file)
     for (row in rows) {
         val homeTeam = row[6]
@@ -50,7 +51,7 @@ fun eachSpan(minSpanLength: Int, maxSpanLength: Int, doSpan: (GameSpan, List<Boo
 fun main(args: Array<String>) {
     val start = Instant.now()
     for (file in File("gl1871_2022").listFiles()!!) {
-        readSeason(file)
+        readSeason(file, modern = args[2] == "modern")
     }
     val minSpanLength = Integer.parseInt(args[0])
     val maxSpanLength = Integer.parseInt(args[1])
